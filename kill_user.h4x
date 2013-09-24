@@ -1,0 +1,11 @@
+WAIT_SEC=2
+
+echo "Users before killing"
+who
+echo "Type a username to kill:"
+read USER_TO_KILL
+sudo pkill -KILL -u $USER_TO_KILL
+echo "Sleeping for $WAIT_SEC seconds..."
+sleep "$WAIT_SEC"s
+echo "Users after killing"
+who

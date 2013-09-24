@@ -1,0 +1,2 @@
+echo "Not in sudoers:"
+cat /var/log/auth.log | grep "user NOT in sudoers"

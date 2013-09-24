@@ -1,0 +1,4 @@
+echo "Enter IP to scan"
+read IP_TO_SCAN
+# scan all ports of given IP
+nmap $IP_TO_SCAN -v -p-

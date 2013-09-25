@@ -1,0 +1,94 @@
+# Routine to mount webdav folders on the local system
+
+# Set IFS
+IFS=$'\n\t\0'
+
+# Check args
+if [ $# -ne 1 ]
+then
+  echo "Usage:  ./mount_all.h4x [input_file.txt]"
+  echo "Use -h option for help with input file."
+  exit
+fi
+
+if [ $1 == "-h" ]
+then
+  echo "inputfile.txt:"
+  echo "# This is a comment"
+  echo "local_dir link_to_websrv"
+  echo "local_dir link_to_websrv"
+  echo "local_dir link_to_websrv"
+  echo "..."
+  exit
+fi
+
+# Parse input file
+ENTRIES=$(cat $1 | grep "^[^#][^$]* [^$]*$")
+
+while true
+do
+  # Show options
+  echo "Entries in $1:"
+
+  # Save and select 
+  COUNT=1
+  for ENTRY in $ENTRIES
+  do
+    echo "$COUNT"")" "$ENTRY"
+    ENTRY_ARRY[((COUNT))]=$ENTRY
+    ((COUNT = COUNT + 1))
+  done
+
+  echo "Select an entry (0 to exit):"
+  read ENTRY_NUM
+
+  if echo $ENTRY_NUM | grep -q "^[0-9]*$"
+  then
+    # Check for exit
+    if [ $ENTRY_NUM -eq 0 ]
+    then
+      echo "Exiting..."
+      exit
+    fi
+
+    # Check within bounds
+    if [ $ENTRY_NUM -ge $COUNT ]
+    then
+      # Warn
+      echo "Choose a number between 0 and $COUNT (inclusive)"
+
+      # Separate from next iteration
+      echo
+
+      # Restart loop
+      continue
+    fi
+
+    # Get the localdir and WebDAV server
+    LOCAL_DIR=$(echo ${ENTRY_ARRY[(($ENTRY_NUM))]} | sed 's/^\([^#][^$]*\) \([^$]*\)$/\1/')
+    WDAV_SRV=$(echo ${ENTRY_ARRY[(($ENTRY_NUM))]} | sed 's/^\([^#][^$]*\) \([^$]*\)$/\2/')
+
+    # Ask if mounting or checking
+    echo "(M)ount or (C)heck drive?"
+    read MOUNT_OR_CHECK
+    if [ $MOUNT_OR_CHECK == "M" ]
+    then
+      # Mount drive
+      echo "Mounting drive..."
+      mount.davfs $WDAV_SRV $LOCAL_DIR
+    elif [ $MOUNT_OR_CHECK == "C" ]
+    then
+      # Check mounted drive
+      ls -l $LOCAL_DIR
+    else
+      # Warn
+      echo "Options are M or C only"
+    fi
+  else
+    # Error out
+    echo "Didn't enter a number."
+  fi
+
+  # Separate from next iteration
+  echo
+done

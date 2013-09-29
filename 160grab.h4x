@@ -1,0 +1,140 @@
+# Routine to mount webdav folders on the local system
+
+# Set IFS
+IFS=$'\n\t\0'
+
+# Check args
+if [ $# -ne 2 ]
+then
+  if [ $# -ge 1 ]
+  then
+    if [ $1 == "-h" ]
+    then
+      echo "inputfile.txt:"
+      echo "# This is a comment"
+      echo "mounted_dir new_dirname"
+      echo "mounted_dir new_dirname"
+      echo "mounted_dir new_dirname"
+      echo "..."
+      exit
+    else
+      echo "Usage:  ./160grab.h4x [input_file.txt] [output_dir]"
+      echo "Use -h option for help with input file."
+      exit
+    fi
+  else
+    echo "Usage:  ./160grab.h4x [input_file.txt] [output_dir]"
+    echo "Use -h option for help with input file."
+    exit
+  fi
+fi
+
+# Get output directory
+if [ -d $2 ]
+then
+  # fix dirname
+  if echo $2 | egrep -q "^.*+/$"
+  then
+    OUT_DIR="$2"
+  else
+    OUT_DIR="$2/"
+  fi 
+
+  # create output dirname
+  OUT_DIR="$OUT_DIR$(date +%m-%d-%y_%H%M%S)/"
+
+  echo "Writing to $OUT_DIR"
+  mkdir $OUT_DIR
+else
+  echo "output_dir doesn't exist."
+  exit
+fi
+
+# Parse input file
+ENTRIES=$(cat $1 | grep "^[^#][^$]* [^$]*$")
+
+while true
+do
+  # Show options
+  echo "Entries in $1:"
+
+  # Save and select 
+  COUNT=1
+  for ENTRY in $ENTRIES
+  do
+    echo "$COUNT"")" "$ENTRY"
+    ENTRY_ARRY[((COUNT))]=$ENTRY
+    ((COUNT = COUNT + 1))
+  done
+
+  echo "Select an entry (0 to exit, $((COUNT)) for all):"
+  read ENTRY_NUM
+
+  if echo $ENTRY_NUM | egrep -q "^[0-9]+$"
+  then
+    # Check for exit
+    if [ $ENTRY_NUM -eq 0 ]
+    then
+      echo "Exiting..."
+      exit
+    fi
+
+    # Check within bounds
+    if [ $ENTRY_NUM -gt $COUNT ]
+    then
+      # Warn
+      echo "Choose a number between 0 and $COUNT (inclusive)"
+
+      # Separate from next iteration
+      echo
+
+      # Restart loop
+      continue
+    fi
+
+    # Get the mount/copy pairs
+    if [ $ENTRY_NUM -eq $COUNT ]
+    then
+      M_C_PAIRS=$ENTRIES
+    else
+      M_C_PAIRS=$(echo ${ENTRY_ARRY[(($ENTRY_NUM))]})      
+    fi
+
+    # Copy files for each mount/copy pair
+    for M_C_PAIR in $M_C_PAIRS
+    do
+      M_DIR=$(echo $M_C_PAIR | sed 's/^\([^#][^$]*\) \([^$]*\)$/\1/')
+      # Correct dirname
+      if ! echo $M_DIR | egrep -q "^.*+/$"
+      then
+        # Add a /
+        M_DIR=$M_DIR/
+      fi 
+      C_DIR=$(echo $M_C_PAIR | sed 's/^\([^#][^$]*\) \([^$]*\)$/\2/')
+
+      # Create the copy directory
+      if [ ! -d "$OUT_DIR$C_DIR" ]
+      then
+	echo "Creating dir $OUT_DIR$C_DIR"
+        mkdir "$OUT_DIR$C_DIR"
+      else
+        echo "Skipping $OUT_DIR$C_DIR, directory exists"
+        continue
+      fi
+
+      # Copy the files
+      for CP_DIR in $(ls -al $M_DIR | egrep "drwxr-xr-x.* [0-9a-zA-Z]+$" | sed -r 's/(.* )([0-9a-zA-Z]+)$/\2/')
+      do
+        echo "Copying $M_DIR$CP_DIR to $OUT_DIR$C_DIR"
+        cp -r $M_DIR$CP_DIR "$OUT_DIR$C_DIR"
+      done
+    done
+
+  else
+    # Error out
+    echo "Didn't enter a number."
+  fi
+
+  # Separate from next iteration
+  echo
+done

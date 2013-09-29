@@ -42,7 +42,7 @@ do
   echo "Select an entry (0 to exit):"
   read ENTRY_NUM
 
-  if echo $ENTRY_NUM | grep -q "^[0-9]*$"
+  if echo $ENTRY_NUM | egrep -q "^[0-9]+$"
   then
     # Check for exit
     if [ $ENTRY_NUM -eq 0 ]
@@ -55,7 +55,7 @@ do
     if [ $ENTRY_NUM -ge $COUNT ]
     then
       # Warn
-      echo "Choose a number between 0 and $COUNT (inclusive)"
+      echo "Choose a number between 0 and $((COUNT-1)) (inclusive)"
 
       # Separate from next iteration
       echo

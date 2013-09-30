@@ -1,11 +1,25 @@
-WAIT_SEC=2
+WAIT_SEC=1
 
-echo "Users before killing"
-who
-echo "Type a username to kill:"
-read USER_TO_KILL
-sudo pkill -KILL -u $USER_TO_KILL
-echo "Sleeping for $WAIT_SEC seconds..."
-sleep "$WAIT_SEC"s
-echo "Users after killing"
-who
+echo "Current users:"
+w
+while true
+do
+  echo "Who to kill (-u username | -t pts/# | QUIT):"
+  read USER_TO_KILL
+
+  if [ $USER_TO_KILL == "QUIT" ]
+  then
+    echo "Exiting."
+    exit
+  elif echo $USER_TO_KILL | egrep -q "\-[ut] .+"
+  then
+    sudo pkill -KILL $USER_TO_KILL
+    echo "Sleeping for $WAIT_SEC seconds..."
+    sleep "$WAIT_SEC"s
+  else
+    echo "Invalid command."
+  fi
+
+  echo "Current users:"
+  w
+done

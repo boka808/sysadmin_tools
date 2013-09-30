@@ -1,0 +1,100 @@
+# Routine to mount webdav folders on the local system
+FALSE=0
+TRUE=1
+
+# Set IFS
+IFS=$'\n\t\0'
+
+# Check args
+if [ $# -ne 2 ]
+then
+  if [ $# -ge 1 ]
+  then
+    if [ $1 == "-h" ]
+    then
+      echo "inputfile.txt:"
+      echo "# This is a comment"
+      echo "[pattern]"
+      echo "[pattern]"
+      echo "[pattern]"
+      echo "..."
+      exit
+    else
+      echo "Usage:  ./dir_check.h4x [pattern file] [start directory]"
+      echo "Use -h option for help with input file."
+      exit
+    fi
+  else
+    echo "Usage:  ./dir_check.h4x [pattern file] [start directory]"
+    echo "Use -h option for help with input file."
+    exit
+  fi
+fi
+
+# Get start directory
+if [ -d $2 ]
+then
+  # fix dirname
+  if echo $2 | egrep -q "^.*+/$"
+  then
+    HOME_DIR="$2"
+  else
+    HOME_DIR="$2/"
+  fi 
+
+  # create log filename
+  LOG_FILE="$HOME_DIR$(date +%m-%d-%y_%H%M%S).log"
+
+  echo "Writing to $LOG_FILE"
+  touch $LOG_FILE
+else
+  echo "output_dir doesn't exist."
+  exit
+fi
+
+# Parse input file
+PATTERNS=$(cat $1)
+echo "Matching patterns:"
+echo "$PATTERNS"
+
+for SECTION in $(ls $HOME_DIR)
+do
+  if [ -d $HOME_DIR$SECTION ]
+  then
+    SECTION="$SECTION/"
+    echo Section:  $HOME_DIR$SECTION
+    for STUDENT in $(ls $HOME_DIR$SECTION)
+    do
+      echo $HOME_DIR$SECTION$STUDENT
+      echo $STUDENT >> $LOG_FILE
+      # MATCHES
+      echo -e "\tMatches" >> $LOG_FILE
+      for PATTERN in $PATTERNS
+      do
+        EXP_PAT=$(echo $PATTERN | sed "s/UNAME/$STUDENT/g")
+        echo -e "\t\t"$(ls $HOME_DIR$SECTION$STUDENT | grep "$EXP_PAT") >> $LOG_FILE
+      done 
+      # NON-MATCHES
+      MATCH=$FALSE
+      echo -e "\tNon-matches" >> $LOG_FILE
+      for FILE in $(ls $HOME_DIR$SECTION$STUDENT)
+      do
+        for PATTERN in $PATTERNS
+        do
+          EXP_PAT=$(echo $PATTERN | sed "s/UNAME/$STUDENT/g")
+          if echo $FILE | grep "$EXP_PAT"
+          then
+            MATCH=$TRUE
+          fi
+        done 
+        if [ $MATCH == $FALSE ]
+        then
+          echo -e "\t\t"$FILE >> $LOG_FILE
+        fi
+      done
+
+      # Separate from next iteration
+      echo >> $LOG_FILE
+    done
+  fi
+done

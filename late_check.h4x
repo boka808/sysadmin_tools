@@ -1,0 +1,7 @@
+IFS=$'\t\0\n'
+
+echo "First folder: $1"
+echo "Second folder: $2"
+echo
+echo "Late files: "
+diff -r $1 $2

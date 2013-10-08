@@ -6,6 +6,9 @@ TRUE=1
 # Set IFS
 IFS=$'\n\t\0'
 
+# The score file name
+FEEDBACK="Feedback.txt"
+
 # Check args
 if [ $# -ne 2 ]
 then
@@ -133,6 +136,11 @@ do
         done
         # Clear output
         echo "Finished student $STUDENT..."
+        read -p "Write feedback file? (0-no, 1-yes): " WRITEFEEDBACK
+        if [ $WRITEFEEDBACK == $TRUE ]
+        then
+          vi "$STUDENT_DIR/$FEEDBACK"
+        fi
         echo
       fi
     done

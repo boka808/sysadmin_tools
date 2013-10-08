@@ -123,7 +123,13 @@ do
               echo "Running a.out..."
                 ./a.out
               # Ask if done
-              read -p "Continue grading $FILE? (0-no, 1-yes): " DO_PFILE
+              read -p "Continue grading $FILE? (0-no, 1-yes, 2-(vi)ew): " DO_PFILE
+              # View file
+              if [ $DO_PFILE == "2" ]
+              then
+                vi -R $FILE_DIR
+                DO_PFILE=$TRUE
+              fi
             done          
 
             # Remove complied code

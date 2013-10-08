@@ -69,16 +69,31 @@ do
       echo $STUDENT >> $LOG_FILE
       # MATCHES
       echo -e "\tMatches" >> $LOG_FILE
-      for PATTERN in $PATTERNS
+      for FILE in $(ls $HOME_DIR$SECTION$STUDENT)
       do
-        EXP_PAT=$(echo $PATTERN | sed "s/UNAME/$STUDENT/g")
-        echo -e "\t\t"$(ls $HOME_DIR$SECTION$STUDENT | grep "$EXP_PAT") >> $LOG_FILE
-      done 
+        MATCH=$FALSE
+        for PATTERN in $PATTERNS
+        do
+          EXP_PAT=$(echo $PATTERN | sed "s/UNAME/$STUDENT/g")
+          if echo $FILE | grep "$EXP_PAT"
+          then
+            MATCH=$TRUE
+          fi
+        done 
+        if [ $MATCH == $TRUE ]
+        then
+          echo -e "\t\t"$FILE >> $LOG_FILE
+          if [ -d "$HOME_DIR$SECTION$STUDENT/$FILE" ]
+          then
+            echo -e "\t\t\t^(Directory)" >> $LOG_FILE
+          fi
+        fi
+      done
       # NON-MATCHES
-      MATCH=$FALSE
       echo -e "\tNon-matches" >> $LOG_FILE
       for FILE in $(ls $HOME_DIR$SECTION$STUDENT)
       do
+        MATCH=$FALSE
         for PATTERN in $PATTERNS
         do
           EXP_PAT=$(echo $PATTERN | sed "s/UNAME/$STUDENT/g")
@@ -90,6 +105,10 @@ do
         if [ $MATCH == $FALSE ]
         then
           echo -e "\t\t"$FILE >> $LOG_FILE
+          if [ -d "$HOME_DIR$SECTION$STUDENT/$FILE" ]
+          then
+            echo -e "\t\t\t^(Directory)" >> $LOG_FILE
+          fi
         fi
       done
 

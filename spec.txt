@@ -1,0 +1,27 @@
+algorithm
+---------
+
+* Check if all files are there...
+  * All good?
+    * Check for compilation?
+  * Missing files?
+    * Which files do they have?
+    * Rtfs?
+         * Convert?
+  * Directory empty?
+    * K.O.!
+
+Improved functionality
+----------------------
+
+* Perfects array
+
+* Fails array
+
+* Case insensitive
+  is this acceptable?
+  * username insensitive?
+    some students messed up on their names
+    perhaps their username and the folder are different?
+
+

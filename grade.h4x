@@ -116,12 +116,9 @@ do
             DO_PFILE=$TRUE
             while [ $DO_PFILE == $TRUE ]
             do
-              # Ask to run code
-              read -p "Run code in a.out? (0-no, 1-yes): " RUN_CODE
-              if [ $RUN_CODE == $TRUE ]
-              then
+              # Run code
+              echo "Running a.out..."
                 ./a.out
-              fi
               # Ask if done
               read -p "Continue grading $FILE? (0-no, 1-yes): " DO_PFILE
             done          

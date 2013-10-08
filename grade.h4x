@@ -1,0 +1,147 @@
+# Allows us to grade the 160 homeworks
+# Routine to mount webdav folders on the local system
+FALSE=0
+TRUE=1
+
+# Set IFS
+IFS=$'\n\t\0'
+
+# Check args
+if [ $# -ne 2 ]
+then
+  if [ $# -ge 1 ]
+  then
+    if [ $1 == "-h" ]
+    then
+      echo "inputfile.txt:"
+      echo "# This is a comment"
+      echo "[pattern]"
+      echo "[pattern]"
+      echo "[pattern]"
+      echo "..."
+      exit
+    else
+      echo "Usage:  ./dir_check.h4x [pattern file] [start directory]"
+      echo "Use -h option for help with input file."
+      exit
+    fi
+  else
+    echo "Usage:  ./dir_check.h4x [pattern file] [start directory]"
+    echo "Use -h option for help with input file."
+    exit
+  fi
+fi
+
+# Get start directory
+if [ -d $2 ]
+then
+  # fix dirname
+  if echo $2 | egrep -q "^.*+/$"
+  then
+    HOME_DIR="$2"
+  else
+    HOME_DIR="$2/"
+  fi 
+
+#  # create log filename
+#  LOG_FILE="$HOME_DIR$(date +%m-%d-%y_%H%M%S).log"
+
+#  echo "Writing to $LOG_FILE"
+#  touch $LOG_FILE
+else
+  echo "output_dir doesn't exist."
+  exit
+fi
+
+# Parse input file
+PATTERNS=$(cat $1)
+echo "Matching patterns:"
+echo "$PATTERNS"
+
+# ask for start student
+read -p "Start at a certain student? (0-no, 1-yes): " START_STUDENT
+if [ $START_STUDENT == $TRUE ]
+then
+  read -p "Enter username: "  START_STUDENT
+  STUDENT_STARTED=$FALSE
+else
+  STUDENT_STARTED=$TRUE
+fi
+
+for SECTION in $(ls $HOME_DIR)
+do
+  SECTION_DIR="$HOME_DIR$SECTION"
+  if [ -d $SECTION_DIR ]
+  then
+    echo Section:  $SECTION_DIR
+    for STUDENT in $(ls $SECTION_DIR)
+    do
+      # Skip students until at the start student
+      if [ $STUDENT != $START_STUDENT -a $STUDENT_STARTED == $FALSE ]
+      then
+        continue
+      else
+        STUDENT_STARTED=$TRUE
+      fi
+
+      STUDENT_DIR="$SECTION_DIR/$STUDENT"
+      if [ -d $STUDENT_DIR ]
+      then
+        echo $STUDENT_DIR
+        # MATCHES
+        for FILE in $(ls $STUDENT_DIR)
+        do
+          FILE_DIR="$STUDENT_DIR/$FILE"
+          MATCH=$FALSE
+          for PATTERN in $PATTERNS
+          do
+            EXP_PAT=$(echo $PATTERN | sed "s/UNAME/$STUDENT/g")
+            if echo $FILE | grep "$EXP_PAT"
+            then
+              MATCH=$TRUE
+            fi
+          done 
+          if [ $MATCH == $TRUE ]
+          then
+            echo -e "Grading: $FILE"
+            if [ -d "$FILE_DIR" ]
+            then
+              echo -e "^(Directory)"
+            fi
+            #---- PROCESS FILE ----
+            # Compile code into ./a.oute
+            echo "Compiling $FILE_DIR"
+            cc $FILE_DIR
+
+            DO_PFILE=$TRUE
+            while [ $DO_PFILE == $TRUE ]
+            do
+              # Ask to run code
+              read -p "Run code in a.out? (0-no, 1-yes): " RUN_CODE
+              if [ $RUN_CODE == $TRUE ]
+              then
+                ./a.out
+              fi
+              # Ask if done
+              read -p "Continue grading $FILE? (0-no, 1-yes): " DO_PFILE
+            done          
+
+            # Remove complied code
+            rm a.out
+
+          else
+            echo "File $FILE for $STUDENT does not match patterns."
+            echo
+          fi
+        done
+        # Clear output
+        echo "Finished student $STUDENT..."
+        echo
+      fi
+    done
+    # Clear output
+    echo "Finished section $SECTION"
+    echo
+    echo
+  fi
+done

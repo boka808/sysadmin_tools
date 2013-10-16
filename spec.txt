@@ -1,7 +1,7 @@
 improvements
 ------------
 
-* Use the path /home/grades/section/username/gradefile 
+* Use the path /home/feedback_files/section/username/Feedback.txt
   for grading
 
 OLDSPEC--------------------------

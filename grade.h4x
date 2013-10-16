@@ -9,6 +9,9 @@ IFS=$'\n\t\0'
 # The score file name
 FEEDBACK="Feedback.txt"
 
+# The score file directory
+FEED_DIR="/home/feedback_files"
+
 # Check args
 if [ $# -ne 2 ]
 then
@@ -142,10 +145,10 @@ do
         done
         # Clear output
         echo "Finished student $STUDENT..."
-        read -p "Write feedback file? (0-no, 1-yes): " WRITEFEEDBACK
+        read -p "Write to feedback file? (0-no, 1-yes): " WRITEFEEDBACK
         if [ $WRITEFEEDBACK == $TRUE ]
         then
-          vi "$STUDENT_DIR/$FEEDBACK"
+          vi "$FEED_DIR/$SECTION/$STUDENT/$FEEDBACK"
         fi
         echo
       fi

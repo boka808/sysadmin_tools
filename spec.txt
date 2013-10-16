@@ -1,3 +1,23 @@
+improvements
+------------
+
+* Use the path /home/grades/section/username/gradefile 
+  for grading
+
+OLDSPEC--------------------------
+
+improvements
+------------
+
+* When checking to continue grading a file...
+  * Option to "(vi)ew file?"
+
+* Write a script to grab all feedback from all feedback files
+  and write to a single file
+
+
+
+OLDSPEC--------------------------
 algorithm
 ---------
 

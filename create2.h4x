@@ -1,0 +1,20 @@
+IFS=$'\n\t\0'
+
+TEMP=10-05-13_171056 
+
+SECTIONS=$(ls /home/students/$TEMP | grep "ee-160")
+
+for SECTION in $SECTIONS
+do
+  #echo $SECTION
+  STUDENTS=$(ls -1 /home/students/$TEMP/$SECTION)
+  for STUDENT in $STUDENTS
+  do
+    #echo -e "\t$STUDENT"
+    if ls /home/students/$TEMP/$SECTION/$STUDENT | grep "Feedback.txt"
+    then
+      echo aggrivating /home/students/$TEMP/$SECTION/$STUDENT/Feedback.txt
+      mv /home/students/$TEMP/$SECTION/$STUDENT/Feedback.txt /home/feedback_files/$SECTION/$STUDENT/Feedback.txt
+    fi
+  done
+done

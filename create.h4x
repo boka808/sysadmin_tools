@@ -1,0 +1,17 @@
+IFS=$'\n\t\0'
+
+SECTIONS=$(ls /home/students/10-05-13_171056 | grep "ee-160")
+
+for SECTION in $SECTIONS
+do
+  #echo $SECTION
+  mkdir /home/feedback_files/$SECTION
+  STUDENTS=$(ls -1 /home/students/10-05-13_171056/$SECTION)
+  for STUDENT in $STUDENTS
+  do
+    mkdir /home/feedback_files/$SECTION/$STUDENT
+    #echo -e "\t$STUDENT"
+    echo touching /home/feedback_files/$SECTION/$STUDENT/Feedback.txt
+    touch /home/feedback_files/$SECTION/$STUDENT/Feedback.txt
+  done
+done

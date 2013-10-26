@@ -1,0 +1,17 @@
+# set ifs
+IFS=$'\n\t\0'
+
+MOUNT_DIR="/mnt/DAV"
+FEED_DIR="/home/feedback_files"
+FEEDBACK="Feedback.txt"
+
+SECTIONS=$(ls -1 $FEED_DIR)
+for SECTION in $SECTIONS
+do
+  STUDENTS=$(ls -1 $FEED_DIR/$SECTION)
+  for STUDENT in $STUDENTS
+  do
+    echo copy $FEED_DIR/$SECTION/$STUDENT/$FEEDBACK $MOUNT_DIR/$SECTION/$STUDENT
+    cp $FEED_DIR/$SECTION/$STUDENT/$FEEDBACK $MOUNT_DIR/$SECTION/$STUDENT
+  done
+done

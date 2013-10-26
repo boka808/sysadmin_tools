@@ -1,0 +1,32 @@
+#check args
+TIME=3
+DEFAULT_MESSAGE="Please save your work, and have a h4x day!"
+
+if [[ $EUID -ne 0 ]]
+then
+   echo "Permission denied; must run as root." 1>&2
+   exit 1
+fi
+
+if [ $# -lt 1 ]
+then
+  echo "Usage:  shutdown.h4x [-r | -h] [MESSAGE]"
+  exit 1
+elif [ $# -eq 1 ]
+then
+  MESSAGE=$DEFAULT_MESSAGE
+else
+  MESSAGE=$2
+fi
+
+if [ $1 == "-r" ]
+then
+  shutdown -r +$TIME $MESSAGE
+elif [ $1 == "-h" ]
+then
+  shutdown -h +$TIME $MESSAGE
+else
+  echo "Invalid option $1"
+  echo "Usage:  shutdown.h4x [-r | -h] [MESSAGE]"
+  exit 1
+fi

@@ -1,0 +1,31 @@
+# set ifs
+IFS=$'\n\t\0'
+
+FEED_DIR="/home/feedback_files"
+FEEDBACK="Feedback.txt"
+GENFILE="$(pwd)/allgrades.txt"
+T_STAMP=$(date)
+
+if [ ! -f $GENFILE ]
+then 
+  touch $GENFILE
+fi
+
+echo -e "Grades for $T_STAMP\n" > $GENFILE
+echo "Writing to $GENFILE:"
+
+SECTIONS=$(ls -1 $FEED_DIR)
+for SECTION in $SECTIONS
+do
+  STUDENTS=$(ls -1 $FEED_DIR/$SECTION)
+  for STUDENT in $STUDENTS
+  do
+    echo "$STUDENT" >> $GENFILE
+    echo "$STUDENT"
+    for LINE in $(cat $FEED_DIR/$SECTION/$STUDENT/$FEEDBACK)
+    do
+      echo -e "\t$LINE" >> $GENFILE
+      echo -e "\t$LINE"
+    done
+  done
+done

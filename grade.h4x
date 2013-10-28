@@ -115,32 +115,43 @@ do
               echo -e "^(Directory)"
             fi
             #---- PROCESS FILE ----
-            # Compile code into ./a.oute
-            echo "Compiling $FILE_DIR"
-            cc $FILE_DIR
+            # For .c files
+	    if echo $FILE_DIR | grep ".*\.c"
+            then
+              # Compile code into ./a.oute
+              echo "Compiling $FILE_DIR"
+              cc $FILE_DIR
+              DO_PFILE=$TRUE
+              while [ $DO_PFILE == $TRUE ]
+              do
+                # Run code
+                echo "Running a.out..."
+                  ./a.out
+                # Ask if done
+                read -p "Continue grading $FILE? (0-no, 1-yes, 2-(vi)ew): " DO_PFILE
+                # View file
+                if [ $DO_PFILE == "2" ]
+                then
+                  vi -R $FILE_DIR
+                  DO_PFILE=$FALSE
+                fi
+              done          
 
-            DO_PFILE=$TRUE
-            while [ $DO_PFILE == $TRUE ]
-            do
-              # Run code
-              echo "Running a.out..."
-                ./a.out
-              # Ask if done
-              read -p "Continue grading $FILE? (0-no, 1-yes, 2-(vi)ew): " DO_PFILE
-              # View file
-              if [ $DO_PFILE == "2" ]
-              then
-                vi -R $FILE_DIR
-                DO_PFILE=$TRUE
-              fi
-            done          
-
-            # Remove complied code
-            rm a.out
+              # Remove complied code
+              rm a.out
+            # For .h files
+            elif echo $FILE_DIR | grep ".*\.h"
+            then
+              # Compile code into ./a.oute
+              echo "Viewing $FILE_DIR"
+              vi $FILE_DIR
+            else
+              read USR_COMMAND -p "Type command to run on $FILE: "
+              $USR_COMMAND $FILE_DIR
+            fi
 
           else
             echo "File $FILE for $STUDENT does not match patterns."
-            echo
           fi
         done
         # Clear output

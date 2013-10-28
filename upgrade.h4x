@@ -1,0 +1,9 @@
+INITDIR=$PWD
+echo "Upgrading scripts..."
+echo "Changing directories..."
+cd /home/tools/sysadmin_tools/
+pwd
+echo "Pulling scripts..."
+git pull
+echo "Changing back directories..."
+cd $INITDIR

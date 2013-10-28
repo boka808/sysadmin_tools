@@ -1,3 +1,23 @@
+# set default flags
+VERBOSE=0
+
+# Get args
+IFS=$IFS_ORIGINAL
+while echo $1 | grep ^- > /dev/null
+do
+  # read args
+  ARGTYPE=$( echo $1 | sed 's/-//g' )
+  ARGVAL=$( echo $2 )
+  # toss out the read args
+  shift
+  shift
+  # use value of ARGTYPE to set flags
+  case "$ARGTYPE" in
+    "v") VERBOSE=1
+    ;;
+  esac
+done
+
 # set ifs
 IFS=$'\n\t\0'
 
@@ -21,11 +41,17 @@ do
   for STUDENT in $STUDENTS
   do
     echo "$STUDENT" >> $GENFILE
-    echo "$STUDENT"
+    if [ $VERBOSE -eq 1 ]
+    then
+      echo "$STUDENT"
+    fi
     for LINE in $(cat $FEED_DIR/$SECTION/$STUDENT/$FEEDBACK)
     do
       echo -e "\t$LINE" >> $GENFILE
-      echo -e "\t$LINE"
+      if [ $VERBOSE -eq 1 ]
+      then
+        echo -e "\t$LINE"
+      fi
     done
   done
 done

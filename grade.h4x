@@ -65,7 +65,7 @@ echo "Matching patterns:"
 echo "$PATTERNS"
 
 # ask for start student
-read -p "Start at a certain student? (0-no, 1-yes): " START_STUDENT
+read -p "Start at a certain student? (1-yes): " START_STUDENT
 if [ $START_STUDENT == $TRUE ]
 then
   read -p "Enter username: "  START_STUDENT

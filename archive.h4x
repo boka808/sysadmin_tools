@@ -1,0 +1,5 @@
+FEED_DIR="/home/feedback_files"
+ARCH_DIR="/home/archives"
+OUT_DIR="$ARCH_DIR/$(date +%m-%d-%y_%H%M%S)/"
+
+cp -r $FEED_DIR $OUT_DIR

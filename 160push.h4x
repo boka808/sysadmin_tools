@@ -12,6 +12,9 @@ do
   for STUDENT in $STUDENTS
   do
     echo copy $FEED_DIR/$SECTION/$STUDENT/$FEEDBACK $MOUNT_DIR/$SECTION/$STUDENT
-    cp $FEED_DIR/$SECTION/$STUDENT/$FEEDBACK $MOUNT_DIR/$SECTION/$STUDENT
+    until cp $FEED_DIR/$SECTION/$STUDENT/$FEEDBACK $MOUNT_DIR/$SECTION/$STUDENT
+    do
+      echo "retrying..."
+    done
   done
 done

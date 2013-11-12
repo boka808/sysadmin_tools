@@ -126,7 +126,11 @@ do
       for CP_DIR in $(ls -al $M_DIR | egrep "drwxr-xr-x.* [0-9a-zA-Z]+$" | sed -r 's/(.* )([0-9a-zA-Z]+)$/\2/')
       do
         echo "Copying $M_DIR$CP_DIR to $OUT_DIR$C_DIR"
-        cp -r $M_DIR$CP_DIR "$OUT_DIR$C_DIR"
+	# Loop cp until successful
+        until cp -r $M_DIR$CP_DIR "$OUT_DIR$C_DIR"
+        do
+          echo "Trying again..."
+        done
       done
     done
 
